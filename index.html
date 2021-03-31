@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Fun</title>
+        <meta charset="utf-8">
+            <style>
+                .buttoncontainer {
+                    width: 100%;
+                }
+                .slidecontainer {
+                  width: 100%;
+                }
+
+                .slider {
+                  -webkit-appearance: none;
+                  width: 30%;
+                  height: 25px;
+                  background: #d3d3d3;
+                  outline: none;
+                  opacity: 0.7;
+                  -webkit-transition: .2s;
+                  transition: opacity .2s;
+                }
+
+                .slider:hover {
+                  opacity: 1;
+                }
+
+                .slider::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 25px;
+                  height: 25px;
+                  background: #4CAF50;
+                  cursor: pointer;
+                }
+
+                .slider::-moz-range-thumb {
+                  width: 25px;
+                  height: 25px;
+                  background: #4CAF50;
+                  cursor: pointer;
+                }
+            </style>
+                <script type="text/javascript" src="Box2dWeb-2.1.a.3.js"></script>
+                <script type="text/javascript" src="Box2dPhysics.js"></script>
+                <script type="text/javascript" src="Box2dBody.js"></script>
+                <script type="text/javascript"> 
+                //box2d vars
+                var b2Vec2 = Box2D.Common.Math.b2Vec2;
+                var b2BodyDef = Box2D.Dynamics.b2BodyDef;
+                var b2Body = Box2D.Dynamics.b2Body;
+                var b2FixtureDef = Box2D.Dynamics.b2FixtureDef;
+                var b2Fixture = Box2D.Dynamics.b2Fixture;
+                var b2World = Box2D.Dynamics.b2World;
+                var b2MassData = Box2D.Collision.Shapes.b2MassData;
+                var b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape;
+                var b2CircleShape = Box2D.Collision.Shapes.b2CircleShape;
+                var b2DebugDraw = Box2D.Dynamics.b2DebugDraw;
+                var physics;
+
+                var lastFrame = new Date().getTime();
+                
+                var oContext;
+                var output;
+                var cdCount = 4;
+                var frameCount = 0;
+                var vidWidth = 1440;
+                var vidHeight = 960;
+                
+                var myRed = "rgba(200,50,0,0.75)";
+                var myBrightRed = "rgba(250,100,50,1.0)";
+                var myBlue = "rgba(0,50,200,0.75)";
+                var myBrightBlue = "rgba(50,100,250,1.0)";
+                var myGreen = "rgba(0,200,50,0.75)";
+                var myBrightGreen = "rgba(50,250,100,1.0)";
+                var myYellow = "rgba(200,200,50,0.75)";
+                var myBrightYellow = "rgba(250,250,50,1.0)";
+
+                  window.onload = init; 
+                  function init() {
+                   
+                    output = document.querySelector('#output');
+                    oContext = output.getContext('2d');
+ 
+                        physics = window.physics = new Physics(output);
+                        
+                        // Create some walls
+                        new Body(physics, { color: "red", type: "static", x: 0, y: 0, height: 10,  width: vidWidth });
+                        new Body(physics, { color: "red", type: "static", x: 0, y: vidHeight/2, height: 10,  width: vidWidth});
+                        new Body(physics, { color: "red", type: "static", x: 0, y: 10, height: vidHeight, width: 10 });
+                        new Body(physics, { color: "red", type: "static", x: vidWidth/2, y:10, height: vidHeight, width: 10 });
+                        
+                        new Body(physics, { color: myRed, shape: "circle", radius: 10, impulseActive: false, word: "Hello", colorTwo: myBrightRed, x: 60, y: 25 });
+                        new Body(physics, { color: myBlue, shape: "circle", radius: 10, impulseActive: false, word: "World", colorTwo: myBrightBlue, x: 120, y: 25  });
+                        new Body(physics, { color: myGreen, shape: "circle", radius: 10, impulseActive: false, word: "Goodbye", colorTwo: myBrightGreen, x: 180, y: 25 });
+                        new Body(physics, { color: myYellow, shape: "circle", radius: 10, impulseActive: false, word: "Bird", colorTwo: myBrightYellow, x: 260, y: 25 })  
+                        
+                        physics.collision(); 
+                        firstStart = false;
+                        console.log("Start Physics!");
+           
+                    //startMedia();
+                    //box2d init
+                   
+                    window.requestAnimFrame = (function(callback) {
+                                               return window.requestAnimationFrame ||
+                                               window.webkitRequestAnimationFrame ||
+                                               window.mozRequestAnimationFrame ||
+                                               windowoRequestAnimationFrame ||
+                                               window.msRequestAnimationFrame ||
+                                               function(callback) { window.setTimeout(callback, 1);};
+                                               })();
+                                               
+                                               animate(oContext);
+                                               
+                                               
+                }
+                function animate(context) {
+                   
+                    //box2d stuff
+                    //comment out the "tmpContext" calls (be sure to get the restore at the bottom of the function)
+                    //to get trails
+                    
+                    var tmpCanvas = document.getElementById('output');
+                    var tmpContext = tmpCanvas.getContext('2d');
+                    tmpContext.save();
+                    tmpContext.clearRect(0,0,tmpCanvas.width,tmpCanvas.height);
+
+                        var tm = new Date().getTime();
+                        var dt = (tm - lastFrame) / 1000;
+                        if(dt > 1/15) { dt = 1/15; }
+                        physics.step(dt);
+                        physics.weakBrownian();
+                        lastFrame = tm;
+                    
+                    //animate
+                    requestAnimFrame(function() { animate(context); });
+                   frameCount++;
+                   tmpContext.restore();
+
+                }
+                </script>  
+
+                </head>
+            <body> 
+                <div>
+                <canvas id="output" width="1440" height="960" style='padding: 0; margin: auto; display: block; width: 1440px;'></canvas>  
+            </div>
+
+        </body>
+    </html>
+
